@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from config import token
 
 
 class Ui_MainWindow(object):
@@ -21,19 +20,11 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.gridLayoutWidget = QtWidgets.QWidget(self.centralwidget)
-        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 0, 331, 431))
+        self.gridLayoutWidget.setGeometry(QtCore.QRect(0, 10, 331, 421))
         self.gridLayoutWidget.setObjectName("gridLayoutWidget")
         self.gridLayout = QtWidgets.QGridLayout(self.gridLayoutWidget)
         self.gridLayout.setContentsMargins(0, 0, 0, 0)
         self.gridLayout.setObjectName("gridLayout")
-
-        #bot = telebot.TeleBot(token)
-        # Авторизация бота
-
-        #audios = bot.
-
-
-
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -43,9 +34,6 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        #self.title.setText(_translate("MainWindow", "Chlorine"))
-        #self.author.setText(_translate("MainWindow", "twenty one pilots"))
-        #self.duration.setText(_translate("MainWindow", "2:07"))
 
 
 if __name__ == "__main__":
