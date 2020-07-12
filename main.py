@@ -27,40 +27,44 @@ class SongList(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
 
     def add_song(self, title, performer, duration):
-        self.song = QtWidgets.QWidget()
-        self.song.setEnabled(True)
-        self.song.setMaximumSize(QtCore.QSize(16777215, 80))
-        self.song.setObjectName("song")
+        self.ui.song = QtWidgets.QWidget(self.ui.gridLayoutWidget)
+        self.ui.song.setEnabled(True)
+        self.ui.song.setMaximumSize(QtCore.QSize(16777215, 80))
+        self.ui.song.setObjectName("song")
 
-        self.title = QtWidgets.QLabel(self.song)
-        self.title.setGeometry(QtCore.QRect(100, 10, 41, 31))
-        self.title.setStyleSheet("color: #FFF;")
-        self.title.setObjectName("title")
+        self.ui.title = QtWidgets.QLabel(self.ui.song)
+        self.ui.title.setGeometry(QtCore.QRect(100, 10, 41, 31))
+        self.ui.title.setStyleSheet("color: #FFF;")
+        self.ui.title.setObjectName("title")
 
-        self.author = QtWidgets.QLabel(self.song)
-        self.author.setGeometry(QtCore.QRect(100, 40, 91, 16))
-        self.author.setStyleSheet("color: #FFF;")
-        self.author.setObjectName("author")
+        self.ui.author = QtWidgets.QLabel(self.ui.song)
+        self.ui.author.setGeometry(QtCore.QRect(100, 40, 91, 16))
+        self.ui.author.setStyleSheet("color: #FFF;")
+        self.ui.author.setObjectName("author")
 
-        self.cover = QtWidgets.QLabel(self.song)
-        self.cover.setEnabled(True)
-        self.cover.setGeometry(QtCore.QRect(10, 10, 61, 61))
-        self.cover.setMaximumSize(QtCore.QSize(5000, 6000))
-        self.cover.setSizeIncrement(QtCore.QSize(0, 0))
-        self.cover.setBaseSize(QtCore.QSize(100, 100))
-        self.cover.setStyleSheet("border-radius: 30px;")
-        self.cover.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.cover.setText("")
-        self.cover.setPixmap(QtGui.QPixmap("../Trench_cover.jpg"))
-        self.cover.setScaledContents(True)
-        self.cover.setObjectName("cover")
+        self.ui.cover = QtWidgets.QLabel(self.ui.song)
+        self.ui.cover.setEnabled(True)
+        self.ui.cover.setGeometry(QtCore.QRect(10, 10, 61, 61))
+        self.ui.cover.setMaximumSize(QtCore.QSize(5000, 6000))
+        self.ui.cover.setSizeIncrement(QtCore.QSize(0, 0))
+        self.ui.cover.setBaseSize(QtCore.QSize(100, 100))
+        self.ui.cover.setStyleSheet("border-radius: 30px;")
+        self.ui.cover.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.ui.cover.setText("")
+        self.ui.cover.setPixmap(QtGui.QPixmap("../Trench_cover.jpg"))
+        self.ui.cover.setScaledContents(True)
+        self.ui.cover.setObjectName("cover")
 
-        self.duration = QtWidgets.QLabel(self.song)
-        self.duration.setGeometry(QtCore.QRect(210, 30, 31, 16))
-        self.duration.setStyleSheet("color: #FFF;")
-        self.duration.setObjectName("duration")
+        self.ui.duration = QtWidgets.QLabel(self.ui.song)
+        self.ui.duration.setGeometry(QtCore.QRect(210, 30, 31, 16))
+        self.ui.duration.setStyleSheet("color: #FFF;")
+        self.ui.duration.setObjectName("duration")
 
-        self.gridLayout.addWidget(self.song, 0, 0, 1, 1)
+        self.ui.title.setText("Chlorine")
+        self.ui.author.setText("twenty one pilots")
+        self.ui.duration.setText("2:07")
+
+        self.ui.gridLayout.addWidget(self.ui.song)
 
 
 app = QtWidgets.QApplication([])
@@ -69,7 +73,7 @@ application = SongList()
 audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
 
 for audio in audios:
-    #application.add_song(1, 1, 1)
+    application.add_song(1, 1, 1)
 
     response = requests.get(f'https://api.telegram.org/bot{token}/getFile', params = {'file_id': audio['file_id']}).json()
     path = response['result']['file_path']
@@ -86,6 +90,5 @@ for audio in audios:
     """
 
 application.show()
-application.add_song(1, 1, 1)
 
 sys.exit(app.exec())

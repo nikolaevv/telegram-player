@@ -32,40 +32,7 @@ class Ui_MainWindow(object):
 
         #audios = bot.
 
-        self.song = QtWidgets.QWidget(self.gridLayoutWidget)
-        self.song.setEnabled(True)
-        self.song.setMaximumSize(QtCore.QSize(16777215, 80))
-        self.song.setObjectName("song")
 
-        self.title = QtWidgets.QLabel(self.song)
-        self.title.setGeometry(QtCore.QRect(100, 10, 41, 31))
-        self.title.setStyleSheet("color: #FFF;")
-        self.title.setObjectName("title")
-
-        self.author = QtWidgets.QLabel(self.song)
-        self.author.setGeometry(QtCore.QRect(100, 40, 91, 16))
-        self.author.setStyleSheet("color: #FFF;")
-        self.author.setObjectName("author")
-
-        self.cover = QtWidgets.QLabel(self.song)
-        self.cover.setEnabled(True)
-        self.cover.setGeometry(QtCore.QRect(10, 10, 61, 61))
-        self.cover.setMaximumSize(QtCore.QSize(5000, 6000))
-        self.cover.setSizeIncrement(QtCore.QSize(0, 0))
-        self.cover.setBaseSize(QtCore.QSize(100, 100))
-        self.cover.setStyleSheet("border-radius: 30px;")
-        self.cover.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.cover.setText("")
-        self.cover.setPixmap(QtGui.QPixmap("../Trench_cover.jpg"))
-        self.cover.setScaledContents(True)
-        self.cover.setObjectName("cover")
-
-        self.duration = QtWidgets.QLabel(self.song)
-        self.duration.setGeometry(QtCore.QRect(210, 30, 31, 16))
-        self.duration.setStyleSheet("color: #FFF;")
-        self.duration.setObjectName("duration")
-
-        self.gridLayout.addWidget(self.song, 0, 0, 1, 1)
 
 
         MainWindow.setCentralWidget(self.centralwidget)
@@ -76,9 +43,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.title.setText(_translate("MainWindow", "Chlorine"))
-        self.author.setText(_translate("MainWindow", "twenty one pilots"))
-        self.duration.setText(_translate("MainWindow", "2:07"))
+        #self.title.setText(_translate("MainWindow", "Chlorine"))
+        #self.author.setText(_translate("MainWindow", "twenty one pilots"))
+        #self.duration.setText(_translate("MainWindow", "2:07"))
 
 
 if __name__ == "__main__":
