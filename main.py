@@ -3,6 +3,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon
 from player import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.Qt import QLabel, pyqtSignal
 
 
 import telebot
@@ -22,6 +23,9 @@ class SongList(QtWidgets.QMainWindow):
     def init_UI(self):
         self.setWindowTitle('Музыка из Telegram')
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
+
+    def play(self):
+        pass
 
     def add_song(self, title, performer, duration):
         self.ui.song = QtWidgets.QWidget(self.ui.gridLayoutWidget)
@@ -81,8 +85,19 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.duration.setFont(font)
         self.ui.duration.setStyleSheet("color: #7c7c7e;")
         self.ui.duration.setObjectName("duration")
-        self.ui.gridLayout.addWidget(self.ui.song)
         # Инициализация длительности композиции
+
+        self.ui.pushButton = QtWidgets.QPushButton(self.ui.song)
+        self.ui.pushButton.setGeometry(QtCore.QRect(-2, 0, 341, 51))
+        self.ui.pushButton.setText("")
+        self.ui.pushButton.setDefault(False)
+        self.ui.pushButton.setFlat(True)
+        self.ui.pushButton.setObjectName("pushButton")
+        self.ui.pushButton.setStyleSheet("opacity: 0;")
+        self.ui.pushButton.clicked.connect(self.play)
+        # Кнопка для отслеживания кликов по аудиозаписи
+
+        self.ui.gridLayout.addWidget(self.ui.song)
 
         self.ui.title.setText(title)
         self.ui.author.setText(performer)
