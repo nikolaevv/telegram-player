@@ -1,9 +1,10 @@
 import sys
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets, QtMultimedia
 from PyQt5.QtGui import QIcon
 from player import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.Qt import QLabel, pyqtSignal
+from PyQt5.QtMultimedia import *
 
 
 import telebot
@@ -18,16 +19,40 @@ class SongList(QtWidgets.QMainWindow):
         super(SongList, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+
+        #self.player = QMediaPlayer()
+        #self.playlist = QMediaPlaylist()
+
         self.init_UI()
 
     def init_UI(self):
         self.setWindowTitle('Музыка из Telegram')
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
 
-    def play(self):
-        pass
+    def play(self, file_id, title):
+        print(file_id)
+        downloaded_audio = os.listdir(path = f'{work_dir}/audio')
+        # Получение списка скачанных аудио
 
-    def add_song(self, title, performer, duration):
+        if f'{title}.mp3' not in downloaded_audio:
+            file = requests.get(f'https://api.telegram.org/file/bot{token}/{path}')
+            # Запрос на получение файла
+            u = open(f'{work_dir}/audio/{audio["title"]}.mp3', 'wb')
+            u.write(file.content)
+            # Запись содержимого в файл
+            u.close()
+
+
+        print(f'{work_dir}/audio/{audio["title"]}.mp3')
+        self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{audio["title"]}.mp3')
+        self.content = QtMultimedia.QMediaContent(self.url)
+        self.player = QtMultimedia.QMediaPlayer()
+        self.player.setMedia(self.content)
+        self.player.play()
+
+        
+
+    def add_song(self, title, performer, duration, file_id):
         self.ui.song = QtWidgets.QWidget(self.ui.gridLayoutWidget)
         self.ui.song.setEnabled(True)
         self.ui.song.setMaximumSize(QtCore.QSize(16777215, 50))
@@ -94,7 +119,7 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.setFlat(True)
         self.ui.pushButton.setObjectName("pushButton")
         self.ui.pushButton.setStyleSheet("opacity: 0;")
-        self.ui.pushButton.clicked.connect(self.play)
+        self.ui.pushButton.clicked.connect(lambda: self.play(file_id, title))
         # Кнопка для отслеживания кликов по аудиозаписи
 
         self.ui.gridLayout.addWidget(self.ui.song)
@@ -120,9 +145,9 @@ for audio in audios:
     path = response['result']['file_path']
     # Запрос на получение прямой ссылки на композицию
 
-    u = open(f'{work_dir}/audio/{audio["title"]}.mp3', 'wb')
+    #u = open(f'{work_dir}/audio/{audio["title"]}.mp3', 'wb')
     #
-    file = requests.get(f'https://api.telegram.org/file/bot{token}/{path}')
+    #file = requests.get(f'https://api.telegram.org/file/bot{token}/{path}')
     # Запрос на получение файла
 
     """
@@ -133,16 +158,16 @@ for audio in audios:
     minutes = int(audio['duration'] % 60)
     duration = f'{audio["duration"] // 60}:{minutes // 10}{minutes % 10}'
     # Форматирование длительности аудио
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
-    application.add_song(audio['title'], audio['performer'], duration)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
     # Добавление песни на экран приложения
 
 application.show()
