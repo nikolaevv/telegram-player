@@ -20,10 +20,8 @@ class SongList(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        #self.player = QMediaPlayer()
-        #self.playlist = QMediaPlaylist()
-
         self.init_UI()
+        #self.ui.pushButton.clicked.connect(lambda: print(1))
 
     def init_UI(self):
         self.setWindowTitle('Музыка из Telegram')
@@ -50,13 +48,12 @@ class SongList(QtWidgets.QMainWindow):
         self.player.setMedia(self.content)
         self.player.play()
 
-        
-
     def add_song(self, title, performer, duration, file_id):
-        self.ui.song = QtWidgets.QWidget(self.ui.gridLayoutWidget)
+        self.ui.song = QtWidgets.QWidget(self.ui.verticalLayoutWidget)
         self.ui.song.setEnabled(True)
         self.ui.song.setMaximumSize(QtCore.QSize(16777215, 50))
         self.ui.song.setObjectName("song")
+        self.ui.song.setMinimumSize(QtCore.QSize(100, 45))
         # Инициализация контейнера для композиции
 
         self.ui.title = QtWidgets.QLabel(self.ui.song)
@@ -122,20 +119,20 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(lambda: self.play(file_id, title))
         # Кнопка для отслеживания кликов по аудиозаписи
 
-        self.ui.gridLayout.addWidget(self.ui.song)
+        #self.ui.verticalLayout.addWidget(self.ui.song)
 
         self.ui.title.setText(title)
         self.ui.author.setText(performer)
         self.ui.duration.setText(duration)
         # Задание тектовых значений
 
-        self.ui.gridLayout.addWidget(self.ui.song)
+        self.ui.verticalLayout.addWidget(self.ui.song)
         # Добавление в главный контейнер
 
 
 app = QtWidgets.QApplication([])
 application = SongList()
-application.setFixedSize(320, 550)
+application.setFixedSize(320, 475)
 # Задание фиксированных сторон
 
 audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
@@ -168,6 +165,11 @@ for audio in audios:
     application.add_song(audio['title'], audio['performer'], duration, path)
     application.add_song(audio['title'], audio['performer'], duration, path)
     application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path)
+
     # Добавление песни на экран приложения
 
 application.show()
