@@ -19,7 +19,7 @@ class SongList(QtWidgets.QMainWindow):
         super(SongList, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
+        self.songs = []
         self.init_UI()
         #self.ui.pushButton.clicked.connect(lambda: print(1))
 
@@ -27,33 +27,44 @@ class SongList(QtWidgets.QMainWindow):
         self.setWindowTitle('Музыка из Telegram')
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
 
-    def play(self, file_id, title):
-        print(file_id)
-        downloaded_audio = os.listdir(path = f'{work_dir}/audio')
-        # Получение списка скачанных аудио
-
-        if f'{title}.mp3' not in downloaded_audio:
-            file = requests.get(f'https://api.telegram.org/file/bot{token}/{path}')
-            # Запрос на получение файла
-            u = open(f'{work_dir}/audio/{audio["title"]}.mp3', 'wb')
-            u.write(file.content)
-            # Запись содержимого в файл
-            u.close()
-
-
-        print(f'{work_dir}/audio/{audio["title"]}.mp3')
-        self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{audio["title"]}.mp3')
-        self.content = QtMultimedia.QMediaContent(self.url)
+    def play(self, file_id, title, id):
         self.player = QtMultimedia.QMediaPlayer()
-        self.player.setMedia(self.content)
+        self.playlist = QtMultimedia.QMediaPlaylist()
+        self.player.setPlaylist(self.playlist)
+
+        for media in range(id, len(self.songs)):
+            #print(file_id)
+            title, file_id = self.songs[media][0], self.songs[media][1]
+            print(title)
+            downloaded_audio = os.listdir(path = f'{work_dir}/audio')
+            # Получение списка скачанных аудио
+
+            if f'{title}.mp3' not in downloaded_audio:
+                file = requests.get(f'https://api.telegram.org/file/bot{token}/{file_id}')
+                # Запрос на получение файла
+                u = open(f'{work_dir}/audio/{title}.mp3', 'wb')
+                u.write(file.content)
+                # Запись содержимого в файл
+                u.close()
+
+
+            print(f'{work_dir}/audio/{title}.mp3')
+            self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{title}.mp3')
+            self.content = QtMultimedia.QMediaContent(self.url)
+            self.playlist.addMedia(self.content)
+            #self.player.setMedia(self.content)
+            #self.player.playlist().setCurrentIndex(0)
         self.player.play()
 
-    def add_song(self, title, performer, duration, file_id):
+    def add_song(self, title, performer, duration, file_id, id):
         self.ui.song = QtWidgets.QWidget(self.ui.verticalLayoutWidget)
         self.ui.song.setEnabled(True)
         self.ui.song.setMaximumSize(QtCore.QSize(16777215, 50))
         self.ui.song.setObjectName("song")
         self.ui.song.setMinimumSize(QtCore.QSize(100, 45))
+
+        #self.ui.song.file_id = file_id
+        #self.ui.song.title = title
         # Инициализация контейнера для композиции
 
         self.ui.title = QtWidgets.QLabel(self.ui.song)
@@ -116,8 +127,10 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.setFlat(True)
         self.ui.pushButton.setObjectName("pushButton")
         self.ui.pushButton.setStyleSheet("opacity: 0;")
-        self.ui.pushButton.clicked.connect(lambda: self.play(file_id, title))
+        self.ui.pushButton.clicked.connect(lambda: self.play(file_id, title, id))
         # Кнопка для отслеживания кликов по аудиозаписи
+
+        self.songs.append([title, file_id])
 
         #self.ui.verticalLayout.addWidget(self.ui.song)
 
@@ -135,7 +148,8 @@ application = SongList()
 application.setFixedSize(320, 475)
 # Задание фиксированных сторон
 
-audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
+audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'},
+{'duration': 298, 'title': 'Chlorine', 'performer': 'Twenty One Pilots', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
 
 for audio in audios:
     response = requests.get(f'https://api.telegram.org/bot{token}/getFile', params = {'file_id': audio['file_id']}).json()
@@ -155,23 +169,11 @@ for audio in audios:
     minutes = int(audio['duration'] % 60)
     duration = f'{audio["duration"] // 60}:{minutes // 10}{minutes % 10}'
     # Форматирование длительности аудио
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
-    application.add_song(audio['title'], audio['performer'], duration, path)
+    application.add_song(audio['title'], audio['performer'], duration, path, audios.index(audio))
 
     # Добавление песни на экран приложения
 
+print(application.songs)
 application.show()
 
 sys.exit(app.exec())

@@ -137,6 +137,15 @@ background: 0;</string>
       <height>411</height>
      </rect>
     </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
     <property name="widgetResizable">
      <bool>true</bool>
     </property>
@@ -145,8 +154,8 @@ background: 0;</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>329</width>
-       <height>409</height>
+       <width>331</width>
+       <height>411</height>
       </rect>
      </property>
      <widget class="QWidget" name="verticalLayoutWidget">
@@ -314,7 +323,7 @@ background: 0;</string>
           <property name="minimumSize">
            <size>
             <width>50</width>
-            <height>50</height>
+            <height>35</height>
            </size>
           </property>
           <property name="styleSheet">

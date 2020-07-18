@@ -33,7 +33,9 @@ class Ui_MainWindow(object):
         self.pushButton_2.setIcon(icon)
         self.pushButton_2.setIconSize(QtCore.QSize(25, 25))
         self.pushButton_2.setFlat(True)
+        #self.pushButton_2.pushButton.clicked.connect(lambda: )
         self.pushButton_2.setObjectName("pushButton_2")
+
         self.label_2 = QtWidgets.QLabel(self.frame)
         self.label_2.setGeometry(QtCore.QRect(140, 6, 61, 20))
         font = QtGui.QFont()
