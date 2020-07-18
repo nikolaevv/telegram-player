@@ -12,6 +12,13 @@ import requests
 from config import token
 import os
 
+'''
+TODO:
+- файлы из бд тг, а не из переменной
+- сделать выбор обложки при добавлении аудио
+- задать текст последней аудио при запуске
+'''
+
 work_dir = os.path.dirname(os.path.abspath(__file__))
 
 class SongList(QtWidgets.QMainWindow):
@@ -19,25 +26,62 @@ class SongList(QtWidgets.QMainWindow):
         super(SongList, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.ui.pushButton_2.clicked.connect(self.button_play_start)
+        self.is_playlist_formed = False
         self.songs = []
         self.init_UI()
+        self.player = QtMultimedia.QMediaPlayer()
         #self.ui.pushButton.clicked.connect(lambda: print(1))
+
+    def button_play_start(self):
+        print(self.player)
+        if self.is_playlist_formed == True:
+            self.player.play()
+        else:
+            self.play(0)
+            self.is_playlist_formed = True
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("pause.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.pushButton_2.setIcon(icon)
+        self.ui.pushButton_2.clicked.disconnect()
+        self.ui.pushButton_2.clicked.connect(self.button_play_stop)
+
+    def button_play_stop(self):
+        self.player.pause()
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("play.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.pushButton_2.setIcon(icon)
+
+        self.ui.pushButton_2.clicked.disconnect()
+        self.ui.pushButton_2.clicked.connect(self.button_play_start)
 
     def init_UI(self):
         self.setWindowTitle('Музыка из Telegram')
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
 
-    def play(self, file_id, title, id):
-        self.player = QtMultimedia.QMediaPlayer()
+    def play(self, id):
         self.playlist = QtMultimedia.QMediaPlaylist()
         self.player.setPlaylist(self.playlist)
+        # Создание плеера и плейлиста для него
+
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap("pause.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ui.pushButton_2.setIcon(icon)
+
+        self.ui.pushButton_2.clicked.disconnect()
+        self.ui.pushButton_2.clicked.connect(self.button_play_stop)
+        # Назначение команд для кнопки
 
         for media in range(id, len(self.songs)):
-            #print(file_id)
-            title, file_id = self.songs[media][0], self.songs[media][1]
+            title, file_id, performer = self.songs[media][0], self.songs[media][1], self.songs[media][2]
             print(title)
             downloaded_audio = os.listdir(path = f'{work_dir}/audio')
             # Получение списка скачанных аудио
+
+            if media == id:
+                self.ui.performer.setText(performer)
+                self.ui.main_title.setText(title)
 
             if f'{title}.mp3' not in downloaded_audio:
                 file = requests.get(f'https://api.telegram.org/file/bot{token}/{file_id}')
@@ -52,8 +96,7 @@ class SongList(QtWidgets.QMainWindow):
             self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{title}.mp3')
             self.content = QtMultimedia.QMediaContent(self.url)
             self.playlist.addMedia(self.content)
-            #self.player.setMedia(self.content)
-            #self.player.playlist().setCurrentIndex(0)
+
         self.player.play()
 
     def add_song(self, title, performer, duration, file_id, id):
@@ -127,10 +170,10 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.setFlat(True)
         self.ui.pushButton.setObjectName("pushButton")
         self.ui.pushButton.setStyleSheet("opacity: 0;")
-        self.ui.pushButton.clicked.connect(lambda: self.play(file_id, title, id))
+        self.ui.pushButton.clicked.connect(lambda: self.play(id))
         # Кнопка для отслеживания кликов по аудиозаписи
 
-        self.songs.append([title, file_id])
+        self.songs.append([title, file_id, performer])
 
         #self.ui.verticalLayout.addWidget(self.ui.song)
 
@@ -156,22 +199,11 @@ for audio in audios:
     path = response['result']['file_path']
     # Запрос на получение прямой ссылки на композицию
 
-    #u = open(f'{work_dir}/audio/{audio["title"]}.mp3', 'wb')
-    #
-    #file = requests.get(f'https://api.telegram.org/file/bot{token}/{path}')
-    # Запрос на получение файла
-
-    """
-    u.write(file.content)
-    # Записываем содержимое в файл
-    u.close()
-    """
     minutes = int(audio['duration'] % 60)
     duration = f'{audio["duration"] // 60}:{minutes // 10}{minutes % 10}'
     # Форматирование длительности аудио
     application.add_song(audio['title'], audio['performer'], duration, path, audios.index(audio))
-
-    # Добавление песни на экран приложения
+    # Добавление песни
 
 print(application.songs)
 application.show()
