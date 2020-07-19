@@ -3,8 +3,13 @@ from telethon.tl.functions.channels import GetParticipantsRequest
 from telethon.tl.types import ChannelParticipantsSearch
 from telethon.tl.functions.messages import GetHistoryRequest
 from config import api_id, api_hash, phone, chat_url
+import os
+import sqlite3
 
 session_name = 'Name_of_session'
+# Название для сессии
+work_dir = os.path.dirname(os.path.abspath(__file__))
+# Абсолютный путь к файлу
 
 client = TelegramClient(session_name, api_id, api_hash)
 client.connect()
@@ -32,7 +37,8 @@ def get_all_messages(channel):
 			offset_id = offset_msg,
 			offset_date = None, add_offset = 0,
 			limit = limit_msg, max_id = 0, min_id = 0,
-			hash = 0))
+			hash = 0
+        ))
 
         if not history.messages:
             # При пустом чате
@@ -42,14 +48,25 @@ def get_all_messages(channel):
 
         for msg in messages:
             if msg.audio != None:
-                duration = msg.audio.attributes[0].duration
                 title = msg.audio.attributes[0].title
                 performer = msg.audio.attributes[0].performer
+                duration = msg.audio.attributes[0].duration
                 # Получение исполнителя, названия трека и его длительности
-                
+
                 client.download_media(message = msg, file = f'audio/{title}.mp3')
                 # Скачивание аудиозаписи
 
+                with sqlite3.connect(f'{work_dir}/music.db') as connect:
+                    cursor = connect.cursor()
+                    sql = '''INSERT INTO music
+                             (title, performer, duration) VALUES (?, ?, ?)
+                          '''
+
+                    cursor.execute(sql, (title, performer, duration))
+                    connect.commit()
+                    # Запись трека в базу данных
+                    print('good')
+                    time.sleep(500)
 
 
 channel = client.get_entity(chat_url)
