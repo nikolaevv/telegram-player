@@ -37,7 +37,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.setObjectName("pushButton_2")
 
         self.performer = QtWidgets.QLabel(self.frame)
-        self.performer.setGeometry(QtCore.QRect(133, 6, 75, 20))
+        self.performer.setGeometry(QtCore.QRect(40, 6, 260, 20))
         font = QtGui.QFont()
         font.setFamily("SF UI Display")
         font.setPointSize(7)
@@ -48,9 +48,10 @@ class Ui_MainWindow(object):
 "background: 0;")
         self.performer.setAlignment(QtCore.Qt.AlignCenter)
         self.performer.setObjectName("performer")
+        #self.performer.setAlignment(Qt.AlignCenter)
 
         self.main_title = QtWidgets.QLabel(self.frame)
-        self.main_title.setGeometry(QtCore.QRect(140, -5, 61, 21))
+        self.main_title.setGeometry(QtCore.QRect(40, -5, 260, 21))
         font = QtGui.QFont()
         font.setPointSize(7)
         self.main_title.setFont(font)

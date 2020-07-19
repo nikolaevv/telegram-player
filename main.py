@@ -15,7 +15,6 @@ import os
 
 '''
 TODO:
-- файлы из бд тг, а не из переменной
 - задать текст последней аудио при запуске
 '''
 
@@ -61,6 +60,7 @@ class SongList(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
 
     def play(self, id):
+        self.player = QtMultimedia.QMediaPlayer()
         self.playlist = QtMultimedia.QMediaPlaylist()
         self.player.setPlaylist(self.playlist)
         # Создание плеера и плейлиста для него
@@ -74,9 +74,10 @@ class SongList(QtWidgets.QMainWindow):
         # Назначение команд для кнопки
 
         for media in range(id, len(self.songs)):
-            title, file_id, performer = self.songs[media][0], self.songs[media][1], self.songs[media][2]
+            title, performer = self.songs[media][0], self.songs[media][1]
             print(title)
             downloaded_audio = os.listdir(path = f'{work_dir}/audio')
+            print(downloaded_audio)
             # Получение списка скачанных аудио
 
             if media == id:
@@ -84,25 +85,31 @@ class SongList(QtWidgets.QMainWindow):
                 self.ui.main_title.setText(title)
 
             print(f'{work_dir}/audio/{title}.mp3')
+            print(id)
             self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{title}.mp3')
             self.content = QtMultimedia.QMediaContent(self.url)
             self.playlist.addMedia(self.content)
 
         self.player.play()
 
-    def add_song(self, title, performer, duration, file_id, id):
+    def add_song(self, title, performer, duration, id):
         self.ui.song = QtWidgets.QWidget(self.ui.verticalLayoutWidget)
         self.ui.song.setEnabled(True)
         self.ui.song.setMaximumSize(QtCore.QSize(16777215, 50))
         self.ui.song.setObjectName("song")
         self.ui.song.setMinimumSize(QtCore.QSize(100, 45))
-
-        #self.ui.song.file_id = file_id
-        #self.ui.song.title = title
         # Инициализация контейнера для композиции
 
+        self.songs.append([title, performer])
+
+        if len(title) > 17:
+            title = title[:17] + '...'
+        if len(performer) > 17:
+            performer = performer[:17] + '...'
+        # Сокращение имени автора или названия при большом кол-во символов
+
         self.ui.title = QtWidgets.QLabel(self.ui.song)
-        self.ui.title.setGeometry(QtCore.QRect(60, 0, 71, 21))
+        self.ui.title.setGeometry(QtCore.QRect(60, 0, 130, 21))
         font = QtGui.QFont()
         font.setFamily("SF UI Text")
         font.setPointSize(11)
@@ -114,7 +121,7 @@ class SongList(QtWidgets.QMainWindow):
         # Инициализация названия
 
         self.ui.author = QtWidgets.QLabel(self.ui.song)
-        self.ui.author.setGeometry(QtCore.QRect(60, 20, 111, 21))
+        self.ui.author.setGeometry(QtCore.QRect(60, 20, 170, 21))
         font = QtGui.QFont()
         font.setFamily("SF UI Display")
         font.setPointSize(10)
@@ -164,8 +171,6 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(lambda: self.play(id))
         # Кнопка для отслеживания кликов по аудиозаписи
 
-        self.songs.append([title, file_id, performer])
-
         #self.ui.verticalLayout.addWidget(self.ui.song)
 
         self.ui.title.setText(title)
@@ -182,21 +187,29 @@ application = SongList()
 application.setFixedSize(320, 475)
 # Задание фиксированных сторон
 
+with sqlite3.connect(f'{work_dir}/music.db') as connect:
+    cursor = connect.cursor()
+    sql = f'''
+        SELECT title, performer, duration
+        FROM music
+    '''
 
+    cursor.execute(sql)
+    audios = cursor.fetchall()
+    audios.reverse()
 
-audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'},
-{'duration': 298, 'title': 'Chlorine', 'performer': 'Twenty One Pilots', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
+#audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'},
+#{'duration': 298, 'title': 'Chlorine', 'performer': 'Twenty One Pilots', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
 
 for audio in audios:
-    response = requests.get(f'https://api.telegram.org/bot{token}/getFile', params = {'file_id': audio['file_id']}).json()
-    path = response['result']['file_path']
-    # Запрос на получение прямой ссылки на композицию
-
-    minutes = int(audio['duration'] % 60)
-    duration = f'{audio["duration"] // 60}:{minutes // 10}{minutes % 10}'
+    minutes = int(audio[2] % 60)
+    duration = f'{audio[2] // 60}:{minutes // 10}{minutes % 10}'
     # Форматирование длительности аудио
-    application.add_song(audio['title'], audio['performer'], duration, path, audios.index(audio))
+    application.add_song(audio[0], audio[1], duration, audios.index(audio))
     # Добавление песни
+    if audios.index(audio) == 0:
+        application.ui.performer.setText(audio[1])
+        application.ui.main_title.setText(audio[0])
 
 print(application.songs)
 application.show()
