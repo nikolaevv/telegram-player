@@ -48,25 +48,34 @@ def get_all_messages(channel):
 
         for msg in messages:
             if msg.audio != None:
+                with sqlite3.connect(f'{work_dir}/music.db') as connect:
+                    cursor = connect.cursor()
+                    sql = f'''
+                        SELECT title
+                        FROM music
+                    '''
+
+                    cursor.execute(sql)
+                    current_music = cursor.fetchall()
+
                 title = msg.audio.attributes[0].title
                 performer = msg.audio.attributes[0].performer
                 duration = msg.audio.attributes[0].duration
                 # Получение исполнителя, названия трека и его длительности
 
-                client.download_media(message = msg, file = f'audio/{title}.mp3')
-                # Скачивание аудиозаписи
+                if (title, ) not in current_music:
+                    client.download_media(message = msg, file = f'audio/{title}.mp3')
+                    # Скачивание аудиозаписи
 
-                with sqlite3.connect(f'{work_dir}/music.db') as connect:
-                    cursor = connect.cursor()
-                    sql = '''INSERT INTO music
-                             (title, performer, duration) VALUES (?, ?, ?)
-                          '''
+                    with sqlite3.connect(f'{work_dir}/music.db') as connect:
+                        cursor = connect.cursor()
+                        sql = '''INSERT INTO music
+                                 (title, performer, duration) VALUES (?, ?, ?)
+                              '''
 
-                    cursor.execute(sql, (title, performer, duration))
-                    connect.commit()
-                    # Запись трека в базу данных
-                    print('good')
-                    time.sleep(500)
+                        cursor.execute(sql, (title, performer, duration))
+                        connect.commit()
+                        # Запись трека в базу данных
 
 
 channel = client.get_entity(chat_url)
