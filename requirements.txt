@@ -2,3 +2,5 @@ PyQt5
 pyqt5-tools
 pyside2
 pytelegrambotapi
+telethon
+sqlite3

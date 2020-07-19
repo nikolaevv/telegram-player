@@ -42,10 +42,14 @@ def get_all_messages(channel):
 
         for msg in messages:
             if msg.audio != None:
-                client.download_media(message = msg)
-                # Скачивание 
+                duration = msg.audio.attributes[0].duration
+                title = msg.audio.attributes[0].title
+                performer = msg.audio.attributes[0].performer
+                # Получение исполнителя, названия трека и его длительности
+                
+                client.download_media(message = msg, file = f'audio/{title}.mp3')
+                # Скачивание аудиозаписи
 
-        print(dir(messages[2]))
 
 
 channel = client.get_entity(chat_url)
