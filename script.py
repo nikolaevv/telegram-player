@@ -48,6 +48,10 @@ def get_all_messages(channel):
 
         for msg in messages:
             if msg.audio != None:
+                print(msg)
+                print(msg.web_preview)
+                print(msg.file)
+                print(dir(msg))
                 with sqlite3.connect(f'{work_dir}/music.db') as connect:
                     cursor = connect.cursor()
                     sql = f'''

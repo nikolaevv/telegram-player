@@ -10,12 +10,12 @@ from PyQt5.QtMultimedia import *
 import telebot
 import requests
 from config import token
+import sqlite3
 import os
 
 '''
 TODO:
 - файлы из бд тг, а не из переменной
-- сделать выбор обложки при добавлении аудио
 - задать текст последней аудио при запуске
 '''
 
@@ -83,15 +83,6 @@ class SongList(QtWidgets.QMainWindow):
                 self.ui.performer.setText(performer)
                 self.ui.main_title.setText(title)
 
-            if f'{title}.mp3' not in downloaded_audio:
-                file = requests.get(f'https://api.telegram.org/file/bot{token}/{file_id}')
-                # Запрос на получение файла
-                u = open(f'{work_dir}/audio/{title}.mp3', 'wb')
-                u.write(file.content)
-                # Запись содержимого в файл
-                u.close()
-
-
             print(f'{work_dir}/audio/{title}.mp3')
             self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{title}.mp3')
             self.content = QtMultimedia.QMediaContent(self.url)
@@ -146,7 +137,7 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.cover.setStyleSheet("border-radius: 50%;")
         self.ui.cover.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.ui.cover.setText("")
-        self.ui.cover.setPixmap(QtGui.QPixmap("../Trench_cover.jpg"))
+        self.ui.cover.setPixmap(QtGui.QPixmap("cover.png"))
         self.ui.cover.setScaledContents(True)
         self.ui.cover.setObjectName("cover")
         # Инициализация обложки и назначение картинки к ней
@@ -190,6 +181,8 @@ app = QtWidgets.QApplication([])
 application = SongList()
 application.setFixedSize(320, 475)
 # Задание фиксированных сторон
+
+
 
 audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'},
 {'duration': 298, 'title': 'Chlorine', 'performer': 'Twenty One Pilots', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
