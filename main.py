@@ -70,7 +70,6 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.main_title.setText(self.songs[id][0])
         self.ui.performer.setText(self.songs[id][1])
         # Переназначение исполнителя и названия текущей песни
-        #self.player.currentMediaChanged.disconnect()
         self.player.currentMediaChanged.connect(lambda: change_current_data(id + 1))
         # Переназначение события переключения трека
 
@@ -106,7 +105,9 @@ class SongList(QtWidgets.QMainWindow):
             # Добавление трека в плейлист
 
         self.player.play()
+
         self.playlist.currentMediaChanged.connect(lambda: self.change_current_data(id + 1))
+        # Смена данный в сайд-баре при переключении трека
 
     def add_song(self, title, performer, duration, id):
         self.ui.song = QtWidgets.QWidget(self.ui.verticalLayoutWidget)
@@ -125,7 +126,7 @@ class SongList(QtWidgets.QMainWindow):
         # Сокращение имени автора или названия при большом кол-во символов
 
         self.ui.title = QtWidgets.QLabel(self.ui.song)
-        self.ui.title.setGeometry(QtCore.QRect(60, 0, 130, 21))
+        self.ui.title.setGeometry(QtCore.QRect(60, 0, 180, 21))
         font = QtGui.QFont()
         font.setFamily("SF UI Text")
         font.setPointSize(11)
@@ -137,7 +138,7 @@ class SongList(QtWidgets.QMainWindow):
         # Инициализация названия
 
         self.ui.author = QtWidgets.QLabel(self.ui.song)
-        self.ui.author.setGeometry(QtCore.QRect(60, 20, 170, 21))
+        self.ui.author.setGeometry(QtCore.QRect(60, 20, 180, 21))
         font = QtGui.QFont()
         font.setFamily("SF UI Display")
         font.setPointSize(10)
