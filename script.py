@@ -10,7 +10,7 @@ import time
 session_name = 'Name_of_session'
 # Название для сессии
 work_dir = os.path.dirname(os.path.abspath(__file__))
-# Абсолютный путь к файлу
+# Абсолютный путь к директории файла
 
 client = TelegramClient(session_name, api_id, api_hash)
 client.connect()
@@ -23,11 +23,10 @@ if not client.is_user_authorized():
 client.start()
 
 def get_all_messages(channel):
-    offset_msg = 75
+    offset_msg = 140
     limit_msg = 0
     # Отступ от начала и максимальное число сообщений
 
-    # Список для всех сообщений канала
     total_messages = 0
     total_count_limit = 0
 
@@ -46,8 +45,6 @@ def get_all_messages(channel):
     messages = history.messages
     messages.reverse()
     print(len(messages))
-    #print(messages[0])
-    #time.sleep(10000)
 
     for msg in messages:
         if msg.audio != None:
@@ -61,7 +58,7 @@ def get_all_messages(channel):
                 cursor.execute(sql)
                 current_music = cursor.fetchall()
 
-            title = msg.audio.attributes[0].title
+            title = msg.audio.attributes[0].title.replace('?', '')
             print(title)
             performer = msg.audio.attributes[0].performer
             duration = msg.audio.attributes[0].duration

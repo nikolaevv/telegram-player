@@ -6,58 +6,65 @@ from PyQt5.QtWidgets import QApplication, QWidget
 from PyQt5.Qt import QLabel, pyqtSignal
 from PyQt5.QtMultimedia import *
 
-
 import telebot
 import requests
 from config import token
 import sqlite3
 import os
 
-'''
-TODO:
-- задать текст последней аудио при запуске
-'''
-
 work_dir = os.path.dirname(os.path.abspath(__file__))
+# Абсолютный путь к директории файла
 
 class SongList(QtWidgets.QMainWindow):
     def __init__(self):
         super(SongList, self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.ui.pushButton_2.clicked.connect(self.button_play_start)
-        self.is_playlist_formed = False
-        self.songs = []
         self.init_UI()
+
+        self.ui.pushButton_2.clicked.connect(self.button_play_start)
+        # Включение аудиозаписи при нажатии на кнопку воспроизведения
+        self.is_playlist_formed = False
+        # Был ли сформирован плейлист
+        self.songs = []
+        # Массив для хранения данных о композициях
         self.player = QtMultimedia.QMediaPlayer()
-        #self.ui.pushButton.clicked.connect(lambda: print(1))
+        # Инициализация плеера
 
     def button_play_start(self):
-        print(self.player)
         if self.is_playlist_formed == True:
             self.player.play()
         else:
             self.play(0)
             self.is_playlist_formed = True
+        # При первом воспроизведении берётся первый трек, иначе - последний проигранный
 
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("pause.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap('pause.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_2.setIcon(icon)
+        # Смена иконки
+
         self.ui.pushButton_2.clicked.disconnect()
         self.ui.pushButton_2.clicked.connect(self.button_play_stop)
+        # Переназначение функции кнопки
 
     def button_play_stop(self):
         self.player.pause()
+        # Плейлист на паузу
+
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("play.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap('play.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_2.setIcon(icon)
+        # Смена иконки
 
         self.ui.pushButton_2.clicked.disconnect()
         self.ui.pushButton_2.clicked.connect(self.button_play_start)
+        # Переназначение функции кнопки
 
     def init_UI(self):
         self.setWindowTitle('Музыка из Telegram')
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
+        # Назначение иконки и названия приложения
 
     def play(self, id):
         self.player = QtMultimedia.QMediaPlayer()
@@ -66,8 +73,9 @@ class SongList(QtWidgets.QMainWindow):
         # Создание плеера и плейлиста для него
 
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("pause.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap('pause.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ui.pushButton_2.setIcon(icon)
+        # Смена иконки
 
         self.ui.pushButton_2.clicked.disconnect()
         self.ui.pushButton_2.clicked.connect(self.button_play_stop)
@@ -75,20 +83,19 @@ class SongList(QtWidgets.QMainWindow):
 
         for media in range(id, len(self.songs)):
             title, performer = self.songs[media][0], self.songs[media][1]
-            print(title)
+
             downloaded_audio = os.listdir(path = f'{work_dir}/audio')
-            print(downloaded_audio)
             # Получение списка скачанных аудио
 
             if media == id:
                 self.ui.performer.setText(performer)
                 self.ui.main_title.setText(title)
+                # Назначение названия и автора первого воспроизводимого трека
 
-            print(f'{work_dir}/audio/{title}.mp3')
-            print(id)
             self.url = QtCore.QUrl.fromLocalFile(f'{work_dir}/audio/{title}.mp3')
             self.content = QtMultimedia.QMediaContent(self.url)
             self.playlist.addMedia(self.content)
+            # Добавление трека в плейлист
 
         self.player.play()
 
@@ -171,8 +178,6 @@ class SongList(QtWidgets.QMainWindow):
         self.ui.pushButton.clicked.connect(lambda: self.play(id))
         # Кнопка для отслеживания кликов по аудиозаписи
 
-        #self.ui.verticalLayout.addWidget(self.ui.song)
-
         self.ui.title.setText(title)
         self.ui.author.setText(performer)
         self.ui.duration.setText(duration)
@@ -184,6 +189,7 @@ class SongList(QtWidgets.QMainWindow):
 
 app = QtWidgets.QApplication([])
 application = SongList()
+
 application.setFixedSize(320, 475)
 # Задание фиксированных сторон
 
@@ -198,9 +204,6 @@ with sqlite3.connect(f'{work_dir}/music.db') as connect:
     audios = cursor.fetchall()
     audios.reverse()
 
-#audios = [{'duration': 214, 'title': 'Invisible', 'performer': 'Linkin Park', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'},
-#{'duration': 298, 'title': 'Chlorine', 'performer': 'Twenty One Pilots', 'file_id':'CQACAgIAAx0CVaejCAACAh9fCvs4bViXwB0ufVIxIkyXKBH5YAAC0QIAAhacuUjsmipaGSKoFxoE'}]
-
 for audio in audios:
     minutes = int(audio[2] % 60)
     duration = f'{audio[2] // 60}:{minutes // 10}{minutes % 10}'
@@ -210,8 +213,8 @@ for audio in audios:
     if audios.index(audio) == 0:
         application.ui.performer.setText(audio[1])
         application.ui.main_title.setText(audio[0])
+        # По умолчанию автор и название трека в side-бар назначаются из первого трека
 
-print(application.songs)
+
 application.show()
-
 sys.exit(app.exec())
