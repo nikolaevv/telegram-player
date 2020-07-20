@@ -66,6 +66,14 @@ class SongList(QtWidgets.QMainWindow):
         self.setWindowIcon(QIcon(f'{work_dir}/logo.png'))
         # Назначение иконки и названия приложения
 
+    def change_current_data(self, id):
+        self.ui.main_title.setText(self.songs[id][0])
+        self.ui.performer.setText(self.songs[id][1])
+        # Переназначение исполнителя и названия текущей песни
+        #self.player.currentMediaChanged.disconnect()
+        self.player.currentMediaChanged.connect(lambda: change_current_data(id + 1))
+        # Переназначение события переключения трека
+
     def play(self, id):
         self.player = QtMultimedia.QMediaPlayer()
         self.playlist = QtMultimedia.QMediaPlaylist()
@@ -98,6 +106,7 @@ class SongList(QtWidgets.QMainWindow):
             # Добавление трека в плейлист
 
         self.player.play()
+        self.playlist.currentMediaChanged.connect(lambda: self.change_current_data(id + 1))
 
     def add_song(self, title, performer, duration, id):
         self.ui.song = QtWidgets.QWidget(self.ui.verticalLayoutWidget)
